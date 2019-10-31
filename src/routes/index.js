@@ -19,8 +19,75 @@ const platziStore = (app) => {
   });
 
   router.get('/products', async (req, res, next) => {
-    const storeProducts = await productService.getProducts()
-    res.status(200).json(storeProducts);
+    try {
+      const storeProducts = await productService.getProducts()
+      res.status(200).json({
+        data: storeProducts,
+        message: 'products listed',
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.get('/products/:productId', async function(req, res, next) {
+    const { productId } = req.params;
+    try {
+      const product = await productService.getProduct({ productId });
+
+      res.status(200).json({
+        data: product,
+        message: 'product retrieved',
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.post('/', async function (req, res, next) {
+    const {body: product } = req;
+    try {
+      const createProductId = await productService.createProduct({ product });
+
+      res.status(201).json({
+        data: createProductId,
+        message: 'product created'
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.put('/products/:productId', async function (req, res, next) {
+    const { body: product } = req;
+    const { productId } = req.params;
+    try {
+      const updatedProductId = await productService.updateProduct({
+        productId,
+        product,
+      });
+
+      res.status(200).json({
+        data: updatedProductId,
+        message: `product updated`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  router.delete('/products/:productId', async function(req, res, next) {
+    const { productId } = req.params;
+    try {
+      const deletedProductId = await productService.deleteProduct({ productId });
+
+      res.status(200).json({
+        data: deletedProductId,
+        message: `product deleted`,
+      });
+    } catch (err) {
+      next(err);
+    }
   });
 
   router.get('*', (req, res) => {
